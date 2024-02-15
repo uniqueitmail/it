@@ -11,9 +11,18 @@ jobs:
       run: |
         Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
         Expand-Archive ngrok.zip
+        Remove-Item ngrok.zip -Force
 
     - name: Update Ngrok
-      run: .\ngrok\ngrok.exe update
+      run: |
+        # Download the latest ngrok version
+        Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok_latest.zip
+        Expand-Archive ngrok_latest.zip
+        Remove-Item ngrok_latest.zip -Force
+        # Replace the existing ngrok executable with the latest version
+        Copy-Item -Path ".\ngrok\ngrok.exe" -Destination ".\ngrok_latest\ngrok.exe" -Force
+        Remove-Item -Path ".\ngrok" -Recurse -Force
+        Rename-Item -Path ".\ngrok_latest" -NewName "ngrok"
 
     - name: Authenticate Ngrok
       run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN

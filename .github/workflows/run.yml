@@ -1,0 +1,19 @@
+name: CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Download Ngrok
+      run: |
+        Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+        Expand-Archive ngrok.zip
+
+    - name: Update Ngrok
+      run: .\ngrok\ngrok.exe update
+
+    - name: Authenticate Ngrok
+      run: .\ngrok\ngrok.exe authtoken ${{ secrets.NGROK
